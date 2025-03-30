@@ -90,7 +90,7 @@ namespace MyBox.Internal
 				_values[i] = GetValue(i);
 			}
 			#if UNITY_2021_3
-			var currentValue = GetValue(property);
+			var currentValue = fieldInfo.GetValue(property.serializedObject.targetObject);
    			#elif UNITY_2022
 			var currentValue = property.boxedValue;
    			#endif
