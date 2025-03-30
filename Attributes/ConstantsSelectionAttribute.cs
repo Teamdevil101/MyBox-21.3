@@ -32,7 +32,7 @@ namespace MyBox.Internal
 		private Type _targetType;
 		private int _selectedValueIndex;
 		private bool _valueFound;
-
+		
 		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 		{
 			if (_attribute == null) Initialize(property);
@@ -48,8 +48,12 @@ namespace MyBox.Internal
 			_selectedValueIndex = EditorGUI.Popup(position, label.text, _selectedValueIndex, _names);
 			if (EditorGUI.EndChangeCheck())
 			{
+    				#if UNITY_2021_3
+   				fieldInfo.SetValue(property.serializedObject.targetObject, _values[_selectedValueIndex]);
+       				#elif UNITY_2022
 				property.boxedValue = _values[_selectedValueIndex];
-				property.serializedObject.ApplyModifiedProperties();
+				#endif
+    				property.serializedObject.ApplyModifiedProperties();
 				EditorUtility.SetDirty(property.serializedObject.targetObject);
 			}
 		}
@@ -85,8 +89,11 @@ namespace MyBox.Internal
 				_names[i] = _constants[i].Name;
 				_values[i] = GetValue(i);
 			}
-
+			#if UNITY_2021_3
+			var currentValue = GetValue(property);
+   			#elif UNITY_2022
 			var currentValue = property.boxedValue;
+   			#endif
 			if (currentValue != null)
 			{
 				for (var i = 0; i < _values.Length; i++)
